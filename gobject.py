@@ -98,7 +98,7 @@ class brick_object :
         vertices = self.shape.get_vertices()
         self.rect.topleft = self.body.local_to_world(vertices[3])
         self.rect.bottomright = self.body.local_to_world(vertices[1])
-        print(self.rect)
+        #print(self.rect)
         pygame.draw.rect(gctrl.surface, COLOR_RED, self.rect, 0, 1)
         pygame.draw.rect(gctrl.surface, COLOR_WHITE, self.rect, 1, 1)
 

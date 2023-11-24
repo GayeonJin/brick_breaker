@@ -101,6 +101,20 @@ def start_game() :
     coll_handler2 = gctrl.space.add_collision_handler(BAR_COLLISION_TYPE, WALL_COLLISION_TYPE)
     coll_handler2.begin = bar.coll_begin
 
+    def brick_separate(arbiter, space, data) :
+        shape = arbiter.shapes[0]
+        #print('brick shape :', shape)
+
+        gctrl.space.remove(shape.body, shape)
+
+        for i, brick in enumerate(bricks) :
+            if brick.body == shape.body :
+                bricks.remove(brick)
+                break
+    
+    coll_handler3 = gctrl.space.add_collision_handler(BRICK_COLLISION_TYPE, BALL_COLLISION_TYPE)
+    coll_handler3.separate = brick_separate
+
     timeStep = 1.0 / 60
 
     running = True
