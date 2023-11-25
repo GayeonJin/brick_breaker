@@ -29,12 +29,8 @@ def draw_info() :
     gctrl.surface.blit(info, (INFO_OFFSET * 2, gctrl.height - 2 * INFO_FONT - INFO_OFFSET)) 
 
 def draw_message(str) :
-    font = pygame.font.Font('freesansbold.ttf', 40)
-    text_suf = font.render(str, True, COLOR_BLACK)
-    text_rect = text_suf.get_rect()
-    text_rect.center = ((gctrl.width / 2), (gctrl.height / 2))
-
-    gctrl.surface.blit(text_suf, text_rect)
+    gctrl.draw_string(str, 0, 0, ALIGN_CENTER, 40, COLOR_BLACK)
+       
     pygame.display.update()
     sleep(2)
 
