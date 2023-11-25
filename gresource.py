@@ -25,11 +25,16 @@ ALIGN_CENTER = 0x04
 ALIGN_BOTTOM = 0x10
 ALIGN_TOP = 0x20
 
+FPS = 60
+
 class game_ctrl :
     def __init__(self) :
         self.surface = None 
         self.width = 640
         self.height = 320
+
+        pygame.init()
+        self.clock = pygame.time.Clock()
 
     def set_surface(self, surface) :
         self.surface = surface

@@ -39,10 +39,6 @@ def terminate() :
     sys.exit()
 
 def start_game() :
-    global clock
-    global ball
-    global bars
-
     draw_options = pymunk.pygame_util.DrawOptions(gctrl.surface)
 
     centerx = gctrl.width / 2
@@ -111,8 +107,6 @@ def start_game() :
     coll_handler3 = gctrl.space.add_collision_handler(BRICK_COLLISION_TYPE, BALL_COLLISION_TYPE)
     coll_handler3.separate = brick_separate
 
-    timeStep = 1.0 / 60
-
     running = True
     while running:
         for event in pygame.event.get() :
@@ -150,18 +144,13 @@ def start_game() :
         bar.draw()
         ball.draw()
 
-        gctrl.space.step(timeStep)
         pygame.display.flip()
-        clock.tick(60)
+        gctrl.space.step(1.0 / FPS)
+        gctrl.clock.tick(FPS)
 
-    pygame.quit()
+    terminate()
 
 def init_game() :
-    global clock
-
-    pygame.init()
-    clock = pygame.time.Clock()
-
     pad_width = 480
     pad_height = 640
 
