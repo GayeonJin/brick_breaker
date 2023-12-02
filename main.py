@@ -15,10 +15,21 @@ from gresource import *
 
 TITLE_STR = "Brick Breaker"
 
+SCORE_UNIT = 10
+
+STATUS_XOFFSET = 10
+STATUS_YOFFSET = 10
+STATUS_HEIGHT = 40
+
 INFO_HEIGHT = 40
 INFO_OFFSET = 10
 INFO_FONT = 14
 
+BRICK_XOFFSET = 40
+BRICK_YOFFSET = 120
+BRICK_HEIGHT = 20
+
+BAR_YOFFSET = 30
 BAR_WIDTH = 60
 
 def draw_info() :
@@ -27,6 +38,9 @@ def draw_info() :
 
     pygame.draw.rect(gctrl.surface, COLOR_PURPLE, (0, gctrl.height - INFO_HEIGHT, gctrl.width, INFO_HEIGHT))
     gctrl.surface.blit(info, (INFO_OFFSET * 2, gctrl.height - 2 * INFO_FONT - INFO_OFFSET)) 
+
+def draw_score(count) :
+    gctrl.draw_string("Score : " + str(count), STATUS_XOFFSET, STATUS_YOFFSET, ALIGN_LEFT)
 
 def draw_message(str) :
     gctrl.draw_string(str, 0, 0, ALIGN_CENTER, 40, COLOR_BLACK)
@@ -39,13 +53,15 @@ def terminate() :
     sys.exit()
 
 def start_game() :
+    global score
+
     draw_options = pymunk.pygame_util.DrawOptions(gctrl.surface)
 
     centerx = gctrl.width / 2
     centery = gctrl.height / 2
 
     sx = 5
-    sy = 5
+    sy = STATUS_HEIGHT + 5
     ex = gctrl.width - 5
     ey = gctrl.height - 5
     
@@ -58,13 +74,13 @@ def start_game() :
     for wall in walls :
         gctrl.space.add(wall.body, wall.shape)
     
-    brick_sx = 40
-    brick_sy = 100
+    brick_sx = BRICK_XOFFSET
+    brick_sy = BRICK_YOFFSET
 
     brick_col_num = 8
     brick_row_num = 8
     brick_width = (gctrl.width - brick_sx * 2) / brick_col_num
-    brick_height = 20
+    brick_height = BRICK_HEIGHT
 
     bricks = []
     for y in range(brick_row_num) :
@@ -72,14 +88,14 @@ def start_game() :
             bricks.append(brick_object((brick_sx, brick_sy), brick_width, brick_height))
             brick_sx += brick_width
         brick_sy += brick_height
-        brick_sx = 40
+        brick_sx = BRICK_XOFFSET
 
     for brick in bricks :
         gctrl.space.add(brick.body, brick.shape)
 
     bar_sx = centerx - (BAR_WIDTH / 2)
     bar_ex = centerx + (BAR_WIDTH / 2)
-    bar_y = gctrl.height - 30
+    bar_y = gctrl.height - BAR_YOFFSET
  
     bar = bar_object((bar_sx, bar_y), (bar_ex, bar_y), BAR_COLLISION_TYPE)
     gctrl.space.add(bar.body, bar.shape)
@@ -94,10 +110,13 @@ def start_game() :
     coll_handler2.begin = bar.coll_begin
 
     def brick_separate(arbiter, space, data) :
+        global score
+
         shape = arbiter.shapes[0]
         #print('brick shape :', shape)
 
         gctrl.space.remove(shape.body, shape)
+        score += 10
 
         for i, brick in enumerate(bricks) :
             if brick.body == shape.body :
@@ -107,6 +126,7 @@ def start_game() :
     coll_handler3 = gctrl.space.add_collision_handler(BRICK_COLLISION_TYPE, BALL_COLLISION_TYPE)
     coll_handler3.separate = brick_separate
 
+    score = 0
     running = True
     while running:
         for event in pygame.event.get() :
@@ -143,6 +163,8 @@ def start_game() :
 
         bar.draw()
         ball.draw()
+
+        draw_score(score)
 
         pygame.display.flip()
         gctrl.space.step(1.0 / FPS)
