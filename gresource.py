@@ -19,6 +19,14 @@ COLOR_PURPLE = (128, 0, 128)
 
 resource_path = ''
 
+resource_sound = {
+    'snd_shot' : 'sound/shot.wav',
+    'snd_explosion' : 'sound/explosion.wav'
+}
+
+def get_snd_resource(resource_id) :
+    return resource_path + resource_sound[resource_id]
+
 ALIGN_LEFT = 0x01
 ALIGN_RIGHT = 0x02
 ALIGN_CENTER = 0x04

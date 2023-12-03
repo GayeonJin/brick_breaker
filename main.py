@@ -55,7 +55,9 @@ def terminate() :
     sys.exit()
 
 def start_game() :
-    global score
+    global score, snd_shot
+
+    snd_shot = pygame.mixer.Sound(get_snd_resource('snd_shot'))
 
     draw_options = pymunk.pygame_util.DrawOptions(gctrl.surface)
 
@@ -114,11 +116,12 @@ def start_game() :
     coll_handler2.begin = bar.coll_begin
 
     def brick_separate(arbiter, space, data) :
-        global score
+        global score, snd_shot
 
         shape = arbiter.shapes[0]
         #print('brick shape :', shape)
 
+        snd_shot.play()
         score += SCORE_UNIT1
 
         for i, brick in enumerate(bricks) :
@@ -156,6 +159,8 @@ def start_game() :
                     bar.set_velociy(0, 0)
                 elif event.key == pygame.K_RIGHT :
                     bar.set_velociy(0, 0)
+                elif event.key == pygame.K_F10 :
+                    gctrl.save_scr_capture(TITLE_STR)
 
         gctrl.surface.fill(COLOR_BLACK)
 
@@ -185,7 +190,7 @@ def init_game() :
     pad_height = 640
 
     gctrl.set_surface(pygame.display.set_mode((pad_width, pad_height)))
-    pygame.display.set_caption(TITLE_STR)    
+    pygame.display.set_caption(TITLE_STR)
 
 if __name__ == '__main__' :
     init_game()
