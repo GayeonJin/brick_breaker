@@ -15,7 +15,8 @@ from gresource import *
 
 TITLE_STR = "Brick Breaker"
 
-SCORE_UNIT = 10
+SCORE_UNIT1 = 10
+SCORE_UNIT2 = 30
 
 STATUS_XOFFSET = 10
 STATUS_YOFFSET = 10
@@ -115,12 +116,16 @@ def start_game() :
         shape = arbiter.shapes[0]
         #print('brick shape :', shape)
 
-        gctrl.space.remove(shape.body, shape)
-        score += 10
+        score += SCORE_UNIT1
 
         for i, brick in enumerate(bricks) :
             if brick.body == shape.body :
-                bricks.remove(brick)
+                brick.life -= 1
+                if brick.life == 0 :
+                    bricks.remove(brick)
+
+                    gctrl.space.remove(shape.body, shape)
+                    score += SCORE_UNIT2
                 break
     
     coll_handler3 = gctrl.space.add_collision_handler(BRICK_COLLISION_TYPE, BALL_COLLISION_TYPE)

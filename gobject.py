@@ -84,8 +84,15 @@ class bar_object :
         pos_b = self.body.local_to_world(self.shape.b)
         pygame.draw.line(gctrl.surface, COLOR_PURPLE, pos_a, pos_b, 8)  
 
+brick_color = [
+    COLOR_RED,
+    COLOR_ORANGE,
+    COLOR_MAGENTA,
+    COLOR_GREEN,
+]
+
 class brick_object :
-    def __init__(self, pos, width = 40, height= 20) :
+    def __init__(self, pos, width = 40, height= 20, life = 3) :
         self.body = pymunk.Body(body_type = pymunk.Body.STATIC)
         self.body.position = pos
         self.shape = pymunk.Poly.create_box(self.body, (width, height))
@@ -93,13 +100,14 @@ class brick_object :
         self.shape.elasticity = 1
         self.shape.collision_type = BRICK_COLLISION_TYPE
         self.rect = pygame.Rect(0, 0, width, height)
+        self.life = life
 
     def draw(self) :
         vertices = self.shape.get_vertices()
         self.rect.topleft = self.body.local_to_world(vertices[3])
         self.rect.bottomright = self.body.local_to_world(vertices[1])
         #print(self.rect)
-        pygame.draw.rect(gctrl.surface, COLOR_RED, self.rect, 0, 1)
+        pygame.draw.rect(gctrl.surface, brick_color[self.life], self.rect, 0, 1)
         pygame.draw.rect(gctrl.surface, COLOR_WHITE, self.rect, 1, 1)
 
 if __name__ == '__main__' :
