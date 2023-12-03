@@ -88,7 +88,8 @@ def start_game() :
     for y in range(brick_row_num) :
         for x in range(brick_col_num) :
             life = brick_data_example1[y][x]
-            bricks.append(brick_object((brick_sx, brick_sy), brick_width, brick_height, life))
+            if life > 0 :
+                bricks.append(brick_object((brick_sx, brick_sy), brick_width, brick_height, life))
             brick_sx += brick_width
         brick_sy += brick_height
         brick_sx = BRICK_XOFFSET
