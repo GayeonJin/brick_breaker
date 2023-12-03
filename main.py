@@ -10,6 +10,7 @@ import pymunk.pygame_util
 import random
 from time import sleep
 
+from brick_data import *
 from gobject import *
 from gresource import *
 
@@ -78,15 +79,16 @@ def start_game() :
     brick_sx = BRICK_XOFFSET
     brick_sy = BRICK_YOFFSET
 
-    brick_col_num = 8
-    brick_row_num = 8
-    brick_width = (gctrl.width - brick_sx * 2) / brick_col_num
+    brick_col_num = BRICK_COLS
+    brick_row_num = BRICK_ROWS
+    brick_width = (gctrl.width - brick_sx * 2) / (brick_col_num - 1)
     brick_height = BRICK_HEIGHT
 
     bricks = []
     for y in range(brick_row_num) :
-        for x in range(brick_col_num+1) :
-            bricks.append(brick_object((brick_sx, brick_sy), brick_width, brick_height))
+        for x in range(brick_col_num) :
+            life = brick_data_example1[y][x]
+            bricks.append(brick_object((brick_sx, brick_sy), brick_width, brick_height, life))
             brick_sx += brick_width
         brick_sy += brick_height
         brick_sx = BRICK_XOFFSET
