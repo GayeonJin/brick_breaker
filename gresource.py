@@ -41,6 +41,9 @@ class game_ctrl :
         self.width = 640
         self.height = 320
 
+        self.centerx = self.width / 2
+        self.centery = self.height / 2
+
         pygame.init()
         self.clock = pygame.time.Clock()
 
@@ -48,6 +51,9 @@ class game_ctrl :
         self.surface = surface
         self.width = surface.get_width()
         self.height = surface.get_height()
+
+        self.centerx = self.width / 2
+        self.centery = self.height / 2
 
         self.space = pymunk.Space()
 

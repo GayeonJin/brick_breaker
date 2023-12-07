@@ -14,7 +14,10 @@ BAR_COLLISION_TYPE = 4
 BOTTOM_COLLISION_TYPE = 5
 
 class ball_object :
-    def __init__(self, pos, radius = 10) :
+    LEFT_DIR = 0
+    RIGHT_DIR = 1
+
+    def __init__(self, pos, dir = LEFT_DIR, radius = 10) :
         self.body = pymunk.Body()
         self.body.position = pos
 
@@ -23,21 +26,16 @@ class ball_object :
         self.shape.elasticity = 1
         self.shape.collision_type = BALL_COLLISION_TYPE
 
-        self.set_velociy(200, random.randrange(-400, 400))
+        if dir == self.LEFT_DIR :
+            self.set_velociy(random.randrange(-400, 0), 200)
+        else :
+            self.set_velociy(random.randrange(0, 400), 200)
 
     def set_position(self, pos) :
         self.body.position = pos
 
     def set_velociy(self, vel_x, vel_y) :
         self.body.velocity = (vel_x, vel_y)
-
-    def coll_begin(self, arbiter, space, data) :
-        # print('begin :', arbiter.shapes[0].body.position)
-
-        self.set_position((gctrl.width / 2, gctrl.height / 2))
-        self.set_velociy(200, random.randrange(-400, 400))
-
-        return False
 
     def draw(self) :
         center = self.body.local_to_world((0, 0))
@@ -74,6 +72,13 @@ class bar_object :
     def get_position_b(self) :
         return self.body.local_to_world(self.shape.b)
     
+    def get_position_center(self) :
+        (x1, y1) = self.get_position_a()
+        (x2, y2) = self.get_position_b()
+        x = (x1 + x2) / 2
+        y = (y1 + y2) / 2
+        return (x, y)
+
     def coll_begin(self, arbiter, space, data) :
         self.set_velociy(0, 0)
 

@@ -36,7 +36,7 @@ BAR_WIDTH = 60
 
 def draw_info() :
     font = pygame.font.SysFont('Verdana', INFO_FONT)
-    info = font.render('F1/F2 : Load/Save file    space : toggle', True, COLOR_BLACK)
+    info = font.render('F1/F2 : Load/Save file    space : start', True, COLOR_BLACK)
 
     pygame.draw.rect(gctrl.surface, COLOR_PURPLE, (0, gctrl.height - INFO_HEIGHT, gctrl.width, INFO_HEIGHT))
     gctrl.surface.blit(info, (INFO_OFFSET * 2, gctrl.height - 2 * INFO_FONT - INFO_OFFSET)) 
@@ -44,8 +44,11 @@ def draw_info() :
 def draw_score(count) :
     gctrl.draw_string("Score : " + str(count), STATUS_XOFFSET, STATUS_YOFFSET, ALIGN_LEFT)
 
+def draw_life(count) :
+    gctrl.draw_string("Life : " + str(count), STATUS_XOFFSET, STATUS_YOFFSET, ALIGN_RIGHT)
+
 def draw_message(str) :
-    gctrl.draw_string(str, 0, 0, ALIGN_CENTER, 40, COLOR_BLACK)
+    gctrl.draw_string(str, 0, 0, ALIGN_CENTER, 40, COLOR_WHITE)
        
     pygame.display.update()
     sleep(2)
@@ -55,7 +58,7 @@ def terminate() :
     sys.exit()
 
 def start_game() :
-    global score, snd_shot
+    global score, player_life, snd_shot, ball
 
     snd_shot = pygame.mixer.Sound(get_snd_resource('snd_shot'))
 
@@ -106,11 +109,21 @@ def start_game() :
     bar = bar_object((bar_sx, bar_y), (bar_ex, bar_y), BAR_COLLISION_TYPE)
     gctrl.space.add(bar.body, bar.shape)
 
-    ball = ball_object((centerx, centery))
-    gctrl.space.add(ball.body, ball.shape)
+    ball = None
+
+    def ball_kill(arbiter, space, data) :
+        global player_life, ball
+
+        shape = arbiter.shapes[0]
+
+        gctrl.space.remove(shape.body, shape)
+        ball = None
+        player_life -= 1
+
+        return True
 
     coll_handler1 = gctrl.space.add_collision_handler(BALL_COLLISION_TYPE, BOTTOM_COLLISION_TYPE)
-    coll_handler1.begin = ball.coll_begin
+    coll_handler1.separate = ball_kill
 
     coll_handler2 = gctrl.space.add_collision_handler(BAR_COLLISION_TYPE, WALL_COLLISION_TYPE)
     coll_handler2.begin = bar.coll_begin
@@ -133,11 +146,14 @@ def start_game() :
                     gctrl.space.remove(shape.body, shape)
                     score += SCORE_UNIT2
                 break
+        
+        return True
     
     coll_handler3 = gctrl.space.add_collision_handler(BRICK_COLLISION_TYPE, BALL_COLLISION_TYPE)
     coll_handler3.separate = brick_separate
 
     score = 0
+    player_life = 3
     running = True
     while running:
         for event in pygame.event.get() :
@@ -159,6 +175,17 @@ def start_game() :
                     bar.set_velociy(0, 0)
                 elif event.key == pygame.K_RIGHT :
                     bar.set_velociy(0, 0)
+                elif event.key == pygame.K_SPACE :
+                    if ball == None :
+                        (x, y) = bar.get_position_center()
+                        y -= 10
+                        if x < gctrl.centerx :
+                            ball = ball_object((x , y), ball_object.LEFT_DIR)
+                        else :
+                            ball = ball_object((x , y), ball_object.RIGHT_DIR)
+
+                        gctrl.space.add(ball.body, ball.shape)
+
                 elif event.key == pygame.K_F10 :
                     gctrl.save_scr_capture(TITLE_STR)
 
@@ -175,9 +202,17 @@ def start_game() :
             brick.draw()
 
         bar.draw()
-        ball.draw()
+
+        if ball != None :
+            ball.draw()
 
         draw_score(score)
+        draw_life(player_life)
+
+        if player_life == 0 :
+            draw_message('Game Over')
+            score = 0
+            player_life = 3
 
         pygame.display.flip()
         gctrl.space.step(1.0 / FPS)
