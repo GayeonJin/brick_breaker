@@ -81,25 +81,11 @@ def start_game() :
     for wall in walls :
         gctrl.space.add(wall.body, wall.shape)
     
-    brick_sx = BRICK_XOFFSET
-    brick_sy = BRICK_YOFFSET
+    stage_data = brick_stage()
+    stage = 1
 
-    brick_col_num = BRICK_COLS
-    brick_row_num = BRICK_ROWS
-    brick_width = (gctrl.width - brick_sx * 2) / (brick_col_num - 1)
-    brick_height = BRICK_HEIGHT
-
-    bricks = []
-    for y in range(brick_row_num) :
-        for x in range(brick_col_num) :
-            life = brick_data_example1[y][x]
-            if life > 0 :
-                bricks.append(brick_object((brick_sx, brick_sy), brick_width, brick_height, life))
-            brick_sx += brick_width
-        brick_sy += brick_height
-        brick_sx = BRICK_XOFFSET
-
-    for brick in bricks :
+    stage_bricks = brick_group(BRICK_COLS, BRICK_ROWS, stage_data.get(stage))
+    for brick in stage_bricks.bricks :
         gctrl.space.add(brick.body, brick.shape)
 
     bar_sx = centerx - (BAR_WIDTH / 2)
@@ -137,16 +123,10 @@ def start_game() :
         snd_shot.play()
         score += SCORE_UNIT1
 
-        for i, brick in enumerate(bricks) :
-            if brick.body == shape.body :
-                brick.life -= 1
-                if brick.life == 0 :
-                    bricks.remove(brick)
+        if stage_bricks.remove(shape) == True :
+            gctrl.space.remove(shape.body, shape)
+            score += SCORE_UNIT2
 
-                    gctrl.space.remove(shape.body, shape)
-                    score += SCORE_UNIT2
-                break
-        
         return True
     
     coll_handler3 = gctrl.space.add_collision_handler(BRICK_COLLISION_TYPE, BALL_COLLISION_TYPE)
@@ -191,6 +171,16 @@ def start_game() :
 
         gctrl.surface.fill(COLOR_BLACK)
 
+        if stage_bricks.is_clear() == True :
+            stage += 1
+
+            gctrl.space.remove(ball.body, ball.shape)
+            ball = None
+
+            stage_bricks = brick_group(BRICK_COLS, BRICK_ROWS, stage_data.get(stage))
+            for brick in stage_bricks.bricks :
+                gctrl.space.add(brick.body, brick.shape)
+
         # do not draw pymunk debug 
         #gctrl.space.debug_draw(draw_options)
 
@@ -198,8 +188,7 @@ def start_game() :
         for wall in walls :
             wall.draw()
 
-        for brick in bricks :
-            brick.draw()
+        stage_bricks.draw()
 
         bar.draw()
 

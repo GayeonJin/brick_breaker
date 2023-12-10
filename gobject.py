@@ -6,6 +6,7 @@ import pymunk.pygame_util
 import random
 
 from gresource import *
+from brick_data import *
 
 BALL_COLLISION_TYPE = 1
 BRICK_COLLISION_TYPE = 2
@@ -114,6 +115,52 @@ class brick_object :
         #print(self.rect)
         pygame.draw.rect(gctrl.surface, brick_color[self.life], self.rect, 0, 1)
         pygame.draw.rect(gctrl.surface, COLOR_WHITE, self.rect, 1, 1)
+
+BRICK_XOFFSET = 40
+BRICK_YOFFSET = 120
+BRICK_HEIGHT = 20
+
+class brick_group :
+    def __init__(self, col, row, brick_data) :
+        brick_sx = BRICK_XOFFSET
+        brick_sy = BRICK_YOFFSET
+
+        brick_col_num = col
+        brick_row_num = row
+        brick_width = (gctrl.width - brick_sx * 2) / (brick_col_num - 1)
+        brick_height = BRICK_HEIGHT
+
+        self.bricks = []
+        for y in range(brick_row_num) :
+            for x in range(brick_col_num) :
+                life = brick_data[y][x]
+                if life > 0 :
+                    self.bricks.append(brick_object((brick_sx, brick_sy), brick_width, brick_height, life))
+                brick_sx += brick_width
+            brick_sy += brick_height
+            brick_sx = BRICK_XOFFSET
+
+    def remove(self, shape) :
+        for i, brick in enumerate(self.bricks) :
+            if brick.body == shape.body :
+                brick.life -= 1
+                if brick.life == 0 :
+                    self.bricks.remove(brick)
+
+                    return True
+                break
+
+        return False
+
+    def is_clear(self) :
+        if len(self.bricks) == 0 :
+            return True
+        else :
+            return False
+
+    def draw(self) :
+        for brick in self.bricks :
+            brick.draw()
 
 if __name__ == '__main__' :
     print('pymunk object')
