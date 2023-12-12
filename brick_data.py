@@ -63,12 +63,12 @@ class brick_data :
             if row == [] :
                 if len(bricks) > 0 :
                     self.stage_data.add(stage, bricks)
-                    print(bricks)
+                    # print(bricks)
                 continue
             if '#' in row[0] and 'Stage' in row[0] :
                 stage = int(row[1])
                 bricks = []
-                print('STAGE : ', stage)
+                # print('STAGE : ', stage)
             else :
                 row_data = []
                 for value in row :

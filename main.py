@@ -2,7 +2,6 @@
 
 import os
 import sys
-import csv
 
 import pygame
 import pymunk
@@ -54,8 +53,9 @@ def terminate() :
     sys.exit()
 
 def start_game() :
-    global score, player_life, snd_shot, ball
+    global score, player_life, snd_shot, mute, ball
 
+    mute = False
     snd_shot = pygame.mixer.Sound(get_snd_resource('snd_shot'))
 
     draw_options = pymunk.pygame_util.DrawOptions(gctrl.surface)
@@ -112,12 +112,13 @@ def start_game() :
     coll_handler2.begin = bar.coll_begin
 
     def brick_separate(arbiter, space, data) :
-        global score, snd_shot
+        global score, snd_shot, mute
 
         shape = arbiter.shapes[0]
         #print('brick shape :', shape)
 
-        snd_shot.play()
+        if mute == False :
+            snd_shot.play()
         score += SCORE_UNIT1
 
         if stage_bricks.remove(shape) == True :
@@ -165,6 +166,8 @@ def start_game() :
 
                 elif event.key == pygame.K_F10 :
                     gctrl.save_scr_capture(TITLE_STR)
+                elif event.key == pygame.K_F12 :
+                    mute = True if mute == False else False 
 
         gctrl.surface.fill(COLOR_BLACK)
 
@@ -191,6 +194,9 @@ def start_game() :
 
         if ball != None :
             ball.draw()
+        else :
+            str = 'Stage %d'%stage
+            gctrl.draw_string(str, 0, 0, ALIGN_CENTER, 30, COLOR_GRAY)
 
         draw_score(score)
         draw_life(player_life)
