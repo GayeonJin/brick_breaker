@@ -27,10 +27,6 @@ INFO_HEIGHT = 40
 INFO_OFFSET = 10
 INFO_FONT = 14
 
-BRICK_XOFFSET = 40
-BRICK_YOFFSET = 120
-BRICK_HEIGHT = 20
-
 BAR_YOFFSET = 30
 BAR_WIDTH = 60
 
@@ -81,10 +77,11 @@ def start_game() :
     for wall in walls :
         gctrl.space.add(wall.body, wall.shape)
     
-    stage_data = brick_stage()
+    game_bricks = brick_data()
+    game_bricks.load_file()
     stage = 1
 
-    stage_bricks = brick_group(BRICK_COLS, BRICK_ROWS, stage_data.get(stage))
+    stage_bricks = brick_group(BRICK_COLS, BRICK_ROWS, game_bricks.stage_data.get(stage))
     for brick in stage_bricks.bricks :
         gctrl.space.add(brick.body, brick.shape)
 
@@ -177,7 +174,7 @@ def start_game() :
             gctrl.space.remove(ball.body, ball.shape)
             ball = None
 
-            stage_bricks = brick_group(BRICK_COLS, BRICK_ROWS, stage_data.get(stage))
+            stage_bricks = brick_group(BRICK_COLS, BRICK_ROWS, game_bricks.stage_data.get(stage))
             for brick in stage_bricks.bricks :
                 gctrl.space.add(brick.body, brick.shape)
 

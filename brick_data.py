@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import sys
+import csv
 
 BRICK_COLS = 9
 BRICK_ROWS = 8
@@ -43,10 +44,6 @@ class brick_stage :
     def __init__(self) :
         self.db = {}
 
-        self.add(0, brick_data_example0)        
-        self.add(1, brick_data_example1)
-        self.add(2, brick_data_example2)
-
     def add(self, stage, brick_data) :
         self.db[stage] = brick_data
 
@@ -54,35 +51,40 @@ class brick_stage :
         return self.db[stage]
 
 class brick_data :
-    def __init__(self, rows = BRICK_ROWS, cols = BRICK_COLS) :
-        self.rows = rows
-        self.cols = cols
+    def __init__(self) :
+        self.stage_data = brick_stage()
 
-        self.bricks = []
-        for y in range(self.rows) :
-            row_data = []
-            for x in range(self.cols) :
-                row_data.append(0)
+    def load_file(self, filename = 'brick_data.csv') :
+        file = open(filename, 'r')
+        rows = csv.reader(file)
 
-            self.bricks.append(row_data)
+        bricks = []
+        for row in rows :
+            if row == [] :
+                if len(bricks) > 0 :
+                    self.stage_data.add(stage, bricks)
+                    print(bricks)
+                continue
+            if '#' in row[0] and 'Stage' in row[0] :
+                stage = int(row[1])
+                bricks = []
+                print('STAGE : ', stage)
+            else :
+                row_data = []
+                for value in row :
+                    row_data.append(int(value))
 
-        self.load(brick_data_example1)
-
-    def load(self, data_array) :
-        for y in range(self.rows) :
-            for x in range(self.cols) :
-                self.bricks[y][x] = data_array[y][x]
-
-        print(self.bricks)
+                bricks.append(row_data)
 
 if __name__ == '__main__' :
-    print('brick_data')
+    print('brick stage')
     bricks = brick_stage()
-
+    bricks.add(0, brick_data_example0)
+    bricks.add(1, brick_data_example1)
+    bricks.add(2, brick_data_example2)
     data = bricks.get(1)
     print(data)
 
-    data = bricks.get(2) 
-    print(data)
-
-    #bricks = brick_data()
+    print('brick data')
+    br_data = brick_data()
+    br_data.load_file()
